@@ -1,0 +1,104 @@
+{\rtf1\ansi\ansicpg1252\cocoartf1404\cocoasubrtf340
+{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+\paperw11900\paperh16840\margl1440\margr1440\vieww25100\viewh15700\viewkind0
+\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\pardirnatural\partightenfactor0
+
+\f0\fs24 \cf0 \
+REAL pl_parseDouble(VECTOR case1) \{\
+        \
+        REAL posicion_coma = encuentra_posicion_coma( case1);\
+        REAL signo_negativo = es_negativo(case1);\
+        REAL parte_parte_entera = 0;\
+        REAL parte_decimal = 0;\
+        REAL index = 0;\
+        REAL result = 0, aux = 1, aux2 = 0;\
+        \
+	index = signo_negativo;\
+        \
+        mientras(case1[index] != '\\0')\{\
+            si(index < posicion_coma)\{\
+                si(index > 0)\{\
+		 result = result * 10;\
+		\}\
+                result = result + dameValor(case1[index]);\
+                \
+            \}sino si(index > posicion_coma)\{\
+                aux = dame_potencia_de_diez(index - (posicion_coma+1));\
+                aux2 += dameValor(case1[index]) * aux;\
+            \}\
+            index += 1;\
+        \}\
+        parte_parte_entera = result;\
+        parte_decimal =  (aux2 / dame_potencia_de_diez(index-(posicion_coma+1)));\
+        \
+	si (signo_negativo == 0)\{\
+		devuelve parte_parte_entera + parte_decimal;\
+	sino \{ \
+		devuelve departe_parte_entera + parte_decimal;\
+	\}\
+    \}\
+\
+ REAL encuentra_posicion_coma(VECTOR case1) \{\
+        REAL index = 0;\
+        mientras(case1.[index] != '\\0')\
+        \{\
+            if(case1[index] == '.') return index;\
+            index = index + 1;\
+        \}\
+        return 274000000000; #Integer.MAXVALUE \
+    \}\
+\
+REAL es_negativo(VECTOR case1) \{\
+        si (case1[0] == \'91-\'91) \{\
+	devuelve 1;\
+	 \}sino\{\
+	devuelve 0;\
+	\}\
+    \}\
+\
+ REAL dame_potencia_de_diedevolverz( REAL i) \{\
+        REAL returnable = 1;\
+        \
+        para (int j = 0; j < i ; j++) \{\
+            returnable *=10;\
+        \}\
+        \
+        devuelve returnable;\
+    \}\
+\
+  REAL dameValor(LETRA charAt) \{\
+        dependiendoDe(charAt)\{\
+            caso '1': devuelve 1;\
+            caso '2': devuelve 2;\
+            caso '3': devuelve 3;\
+            caso '4': devuelve 4;\
+            caso '5': devuelve 5;\
+            caso '6': devuelve 6;\
+            caso '7': devuelve 7;\
+            caso '8': devuelve 8;\
+            caso '9': devuelve 9;\
+            caso '0': devuelve 0;\
+        \}\
+        devuelve -1;\
+    \}\
+\
+\
+\
+func nulo inicio(VECTOR args) \{\
+\
+    \
+        VECTOR case1  = [\'911\'92 , \'92\\0\'92];\
+        VECTOR case2  = [\'911\'92,\'920\'92,\'923\'92,\'920\'92,\'92\\0\'92];\
+        VECTOR case3  = [\'91-\'91,\'923\'92,\'922\'92,\'92\\0\'92];\
+        VECTOR case4  = [\'912\'92,\'92.\'92,\'921\'92,\'92\\0\'92];\
+        VECTOR case5  = [\'91-\'91,\'923\'92,\'923\'92,\'92.\'92,\'925\'92 ,\'92\\0\'92];\
+        \
+        REAL d;\
+        d = pl_parseDouble(case1);\
+        d =pl_parseDouble(case2);\
+        d =pl_parseDouble(case3);\
+        d =pl_parseDouble(case4);\
+        d =pl_parseDouble(case5);\
+        \
+    \}}
