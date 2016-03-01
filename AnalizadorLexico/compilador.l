@@ -1,6 +1,5 @@
 %{
 #include <stdio.h>
-#include <conio.h>
 int num_lineas = 0, num_caracteres = 0;
 %}
 %option noyywrap
@@ -29,16 +28,16 @@ int main(int argc,char *argv[])
 {
     char NomArch[30];
     printf("Ingrese nombre de archivo: ");
-    gets(NomArch);
-    if ((yyin = fopen(NomArch, "rt")) == NULL)
+    
+    if ((yyin = fopen("Prueba.txt", "rt")) == NULL)
     {
-        printf("\nNo se puede abrir el archivo: %s\n", NomArch);
+        printf("\nNo se puede abrir el archivo: %s\n", "Prueba.txt");
     }
     else
     {
         yylex();
     }
     fclose(yyin);
-    getch();
+    
     return 0;
 }
