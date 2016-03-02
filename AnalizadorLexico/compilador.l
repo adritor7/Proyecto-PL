@@ -92,7 +92,7 @@ ignora " "|\t|\n
 "VECTOR"    {return TIPOVECTOR;}
 "LETRA"     {return TIPOLETRA;}
 "lee"       {return LEER;}
-"escribe"   {return ESCRIBIR}
+"escribe"   {return ESCRIBIR;}
 "+"         {return SUMA;}
 "-"         {return RESTA;}
 "*"         {return MULTIPLICACION;}
