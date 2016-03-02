@@ -55,6 +55,7 @@
 #define AND 316
 #define OR  317
 #define NOT 318
+#define CADENA 319
 %}
 %option noyywrap
 %option yylineno
@@ -113,13 +114,41 @@ ignora " "|\t|\n
 "&&"        {return AND;}
 "||"        {return OR;}
 "#"         {return LINEA_COMENTARIO;}
-"/*"		{return INICIO_COMENTARIO;}
-"*/"        {return FINAL_COMENTARIO;}
 {ignora}+   {;}
 {digitos}+"."{digitos}* {yylval.num = atof(yytext);  return NUMERO;}
 {digitos}+  {yylval.num = atof(yytext);  return NUMERO;}
 {letras}({letras}|{digitos})* {return IDENTIFICADOR;}
+"\"({letras}|{digitos})*\"" {return CADENA;}
+"/*"     { /* ignore multiline comments. */
+            register int c;
+    
+        for (;;)
+        {
+            while ((c = input ()) != '*' && c != EOF)
+            ; /* eat up text of comment. */
+        
+            if (c == '*')
+            {
+                while ((c = input ()) == '*')
+                ;
+            
+                if (c == '/')
+                break; /* found the end. */
+            }
+        
+            if (c == EOF)
+            {
+                printf ("Error: EOF in comment.\n");
+                break;
+            }
+        }
+    }
+
+"#"({letras}|{digitos}|{ignora})* {;}
 .         printf("ERROR LEXICO EN LINEA %d \n",yylineno);}
+
+
+
 %%
 int main(int argc,char *argv[])
 {
