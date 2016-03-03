@@ -1,5 +1,6 @@
 %{
 #include <stdio.h>
+#include "y.tab.h"
 #define ABREPARENTESIS 257
 #define CIERRAPARENTESIS 258
 #define ABRECORCHETES 259
@@ -115,40 +116,13 @@ ignora " "|\t|\n
 "||"        {return OR;}
 "#"         {return LINEA_COMENTARIO;}
 {ignora}+   {;}
-{digitos}+"."{digitos}* {yylval.num = atof(yytext);  return NUMERO;}
-{digitos}+  {yylval.num = atof(yytext);  return NUMERO;}
+{digitos}+"."{digitos}* {yylval.d = atof(yytext);  return NUMERO;}
+{digitos}+  {yylval.d = atof(yytext);  return NUMERO;}
 {letras}({letras}|{digitos})* {return IDENTIFICADOR;}
 "\"({letras}|{digitos})*\"" {return CADENA;}
-"/*"     { /* ignore multiline comments. */
-            register int c;
-    
-        for (;;)
-        {
-            while ((c = input ()) != '*' && c != EOF)
-            ; /* eat up text of comment. */
-        
-            if (c == '*')
-            {
-                while ((c = input ()) == '*')
-                ;
-            
-                if (c == '/')
-                break; /* found the end. */
-            }
-        
-            if (c == EOF)
-            {
-                printf ("Error: EOF in comment.\n");
-                break;
-            }
-        }
-    }
-
+"/*"([^\*]|\*[^/])"*/" { printf("COMENTARIO MULTILINEA\n"); }
 "#"({letras}|{digitos}|{ignora})* {;}
-.         printf("ERROR LEXICO EN LINEA %d \n",yylineno);}
-
-
-
+.         {printf("ERROR LEXICO EN LINEA %d \n",yylineno);}
 %%
 int main(int argc,char *argv[])
 {
@@ -158,7 +132,7 @@ int main(int argc,char *argv[])
     }
     else
     {
-        yylex();
+        while(yylex() != 0);
     }
     fclose(yyin);
     return 0;
