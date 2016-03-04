@@ -55,9 +55,12 @@
 #define AND 316
 #define OR  317
 #define NOT 318
+#define CADENA 319
 %}
 %option noyywrap
 %option yylineno
+%option yylineno
+%x INCOMMENT INSTRING
 digitos [0-9]
 letras [a-zA-Z]
 ignora " "|\t|\n
@@ -92,7 +95,7 @@ ignora " "|\t|\n
 "VECTOR"    {return TIPOVECTOR;}
 "LETRA"     {return TIPOLETRA;}
 "lee"       {return LEER;}
-"escribe"   {return ESCRIBIR}
+"escribe"   {return ESCRIBIR;}
 "+"         {return SUMA;}
 "-"         {return RESTA;}
 "*"         {return MULTIPLICACION;}
@@ -111,15 +114,24 @@ ignora " "|\t|\n
 "!="        {return DISTINTO_QUE;}
 "!"         {return NOT;}
 "&&"        {return AND;}
-"||"        {return OR;}
-"#"         {return LINEA_COMENTARIO;}
-"/*"		{return INICIO_COMENTARIO;}
-"*/"        {return FINAL_COMENTARIO;}
+"||"    	{return OR;}
+
+<INITIAL>"/*"   {printf("%s",yytext); BEGIN(INCOMMENT);}
+<INCOMMENT>"*/" {printf("%s",yytext);BEGIN(INITIAL);}
+<INCOMMENT>.|\n {printf("%s",yytext);}
+
+<INITIAL>\"     {printf("%s",yytext); BEGIN(INSTRING);}
+<INSTRING>\"    {printf("%s",yytext);BEGIN(INITIAL);}
+<INSTRING>.|    {printf("%s",yytext);}
+
+
+"#"({letras}|{digitos}|[" "|\t|])*[\n]? {;}
+\"({letras}|{digitos})*\" {printf("%s",yytext);}
 {ignora}+   {;}
-{digitos}+"."{digitos}* {yylval.num = atof(yytext);  return NUMERO;}
-{digitos}+  {yylval.num = atof(yytext);  return NUMERO;}
+{digitos}+"."{digitos}* {return NUMERO;}
+{digitos}+  {return NUMERO;}
 {letras}({letras}|{digitos})* {return IDENTIFICADOR;}
-.         printf("ERROR LEXICO EN LINEA %d \n",yylineno);}
+. 							  {printf("error");}
 %%
 int main(int argc,char *argv[])
 {
@@ -129,7 +141,7 @@ int main(int argc,char *argv[])
     }
     else
     {
-        yylex();
+        while(yylex() != 0);
     }
     fclose(yyin);
     return 0;
