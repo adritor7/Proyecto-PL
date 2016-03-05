@@ -33,9 +33,7 @@
 #define LEER 288
 #define ESCRIBIR 289
 #define ASIGNACION 290
-#define LINEA_COMENTARIO 291
-#define INICIO_COMENTARIO 292
-#define FINAL_COMENTARIO 293
+#define ERROR 291
 #define SUMA 300
 #define RESTA 301
 #define MULTIPLICACION 302
@@ -116,22 +114,21 @@ ignora " "|\t|\n
 "&&"        {return AND;}
 "||"    	{return OR;}
 
-<INITIAL>"/*"   {printf("%s",yytext); BEGIN(INCOMMENT);}
-<INCOMMENT>"*/" {printf("%s",yytext);BEGIN(INITIAL);}
-<INCOMMENT>.|\n {printf("%s",yytext);}
+<INITIAL>"/*"   {BEGIN(INCOMMENT);}
+<INCOMMENT>"*/" {BEGIN(INITIAL);}
+<INCOMMENT>.|\n {;}
 
-<INITIAL>\"     {printf("%s",yytext); BEGIN(INSTRING);}
-<INSTRING>\"    {printf("%s",yytext);BEGIN(INITIAL);}
-<INSTRING>.|    {printf("%s",yytext);}
+<INITIAL>\"     {BEGIN(INSTRING);}
+<INSTRING>\"    {BEGIN(INITIAL);}
+<INSTRING>.     {;}
 
 
 "#"({letras}|{digitos}|[" "|\t|])*[\n]? {;}
-\"({letras}|{digitos})*\" {printf("%s",yytext);}
 {ignora}+   {;}
 {digitos}+"."{digitos}* {return NUMERO;}
 {digitos}+  {return NUMERO;}
 {letras}({letras}|{digitos})* {return IDENTIFICADOR;}
-. 							  {printf("error");}
+. 							  {return ERROR;}
 %%
 int main(int argc,char *argv[])
 {
