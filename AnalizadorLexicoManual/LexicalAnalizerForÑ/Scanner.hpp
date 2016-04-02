@@ -15,7 +15,7 @@
 #endif /* Scanner_hpp */
 
 class Scanner {
-    FILE* file;
+    std::ifstream file;
     char current;
     
 public:

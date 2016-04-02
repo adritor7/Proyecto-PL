@@ -9,12 +9,12 @@
 #include "Scanner.hpp"
 
 Scanner::Scanner(const char* path){
-
-    this->file = fopen(path, "r");
+    
+    this->file.open(path);
 }
 
 char Scanner::nextChar(){
-    this->current = fgetc(this->file);
+    this->file.get(this->current);
     return this->current;
 }
 

@@ -67,9 +67,15 @@ ignora " "|\t|\n
 <INCOMMENT>"*/" {BEGIN(INITIAL);}
 <INCOMMENT>.|\n {;}
 
+<<<<<<< Updated upstream
 <INITIAL>\"     {BEGIN(INSTRING);}
 <INSTRING>\"    {BEGIN(INITIAL);}
 <INSTRING>.     {;}
+=======
+<INITIAL>\"     {printf("%s",yytext); BEGIN(INSTRING);}
+<INSTRING>\"    {printf("%s",yytext);BEGIN(INITIAL);}
+<INSTRING>.    {printf("%s",yytext);}
+>>>>>>> Stashed changes
 
 
 "#"({letras}|{digitos}|[" "|\t|])*[\n]? {;}
@@ -77,7 +83,11 @@ ignora " "|\t|\n
 {digitos}+"."{digitos}* {return NUMERO;}
 {digitos}+  {return NUMERO;}
 {letras}({letras}|{digitos})* {return IDENTIFICADOR;}
+<<<<<<< Updated upstream
 . 							  {return ERROR;}
+=======
+. 							  {printf("error  %s",yytext);}
+>>>>>>> Stashed changes
 %%
 int main(int argc,char *argv[])
 {
