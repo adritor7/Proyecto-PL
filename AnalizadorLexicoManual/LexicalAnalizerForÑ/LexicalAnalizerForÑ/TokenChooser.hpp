@@ -9,11 +9,24 @@
 #ifndef TokenChooser_hpp
 #define TokenChooser_hpp
 #include "Writer.hpp"
+#include "tokenDef.h"
+#include "keywords.h"
+#include <deque>
+#include <string>
 #endif /* TokenChooser_hpp */
 
 class TokenChooser {
     Writer * w;
-    void (*state_callback)(char);
+    std::deque<char> queue;
+    bool regularExpressionInProcess;
+    
+private:
+    void decide();
+    bool isCurrentWhiteSpace();
+    bool isCurrentPartOfKeyword();
+    bool checkFirstOrderKeyWords();
+    int completeKeyword();
+    
 public:
     TokenChooser();
     void accept(char c);

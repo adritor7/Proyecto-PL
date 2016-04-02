@@ -33,6 +33,8 @@
 		278AF1631C99C9C200C524A9 /* TokenChooser.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = TokenChooser.hpp; sourceTree = "<group>"; };
 		278AF1651C99CBAE00C524A9 /* Writer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Writer.cpp; sourceTree = "<group>"; };
 		278AF1661C99CBAE00C524A9 /* Writer.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Writer.hpp; sourceTree = "<group>"; };
+		27DFE3B71CB02E4500E1221C /* tokenDef.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = tokenDef.h; path = ../../../AnalizadorLexico/tokenDef.h; sourceTree = "<group>"; };
+		27DFE3B81CB0359700E1221C /* keywords.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = keywords.h; sourceTree = "<group>"; };
 		27FCDB1B1C96F61C00AF492E /* LexicalAnalizerForÑ */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "LexicalAnalizerForÑ"; sourceTree = BUILT_PRODUCTS_DIR; };
 		27FCDB1E1C96F61C00AF492E /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -67,6 +69,8 @@
 		27FCDB1D1C96F61C00AF492E /* LexicalAnalizerForÑ */ = {
 			isa = PBXGroup;
 			children = (
+				27DFE3B81CB0359700E1221C /* keywords.h */,
+				27DFE3B71CB02E4500E1221C /* tokenDef.h */,
 				278AF15F1C99C5BC00C524A9 /* Scanner.cpp */,
 				278AF1601C99C5BC00C524A9 /* Scanner.hpp */,
 				27FCDB1E1C96F61C00AF492E /* main.cpp */,
