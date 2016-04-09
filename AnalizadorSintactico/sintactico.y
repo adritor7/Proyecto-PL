@@ -11,18 +11,18 @@
 %union{
   float  real;
   char * texto;
+  char caracter;
 }
-%start Exp_l
-
+%start input
 %token ABREPARENTESIS 
 %token CIERRAPARENTESIS 
 %token ABRECORCHETES 
 %token CIERRACORCHETES 
 %token ABRELLAVES 
 %token CIERRALLAVES 
-%token TIPOREAL 
+%token <texto> TIPOREAL 
 %token TIPOVECTOR 
-%token TIPOLETRA 
+%token <texto> TIPOLETRA 
 %token RESERVAESPACIOVECTOR 
 %token SI 
 %token SOLOSI 
@@ -68,6 +68,7 @@
 %token OR  
 %token NOT 
 %token CADENA 
+%token <texto> CARACTER
 
 %left MODULO MODULO_PUNTO
 %left SUMA SUMA_PUNTO RESTA RESTA_PUNTO
@@ -76,20 +77,24 @@
 %type <real> Calcular
 %type <real> Exp_l
 %type <real> Imprimir
+%type <real> ExpresionNumerica
+%type <texto> ExpresionLetra
 %%
 
+input: /* cadena vacia */
+	   | input linea
+	  ;
 
-Exp_l:  Exp_l Imprimir  
-        |Imprimir
-        ;
-Imprimir : Calcular PUNTOYCOMA {printf ("%4.1f\n",$1);}     
+linea: TIPOREAL IDENTIFICADOR '='  ExpresionNumerica PUNTOYCOMA
+	  |TIPOREAL IDENTIFICADOR '=' PUNTOYCOMA
+	  |TIPOLETRA IDENTIFICADOR '=' PUNTOYCOMA
+	  |TIPOLETRA IDENTIFICADOR '=' ExpresionLetra PUNTOYCOMA
+	  ;
+	  
+ExpresionNumerica: NUMERO {$$=$1;}
+ExpresionLetra: CARACTER {$$=$1;}
 
-Calcular: NUMERO {$$=$1;}
-     |Calcular SUMA Calcular {$$=$1+$3;}
-     |Calcular RESTA Calcular {$$=$1-$3;}
-     |Calcular MULTIPLICACION Calcular {$$=$1*$3;}
-     |Calcular DIVISION Calcular {$$=$1/$3;}
-     ;
+
 %%
 void yyerror(char *s){
   printf("Error sintactico %s",s);

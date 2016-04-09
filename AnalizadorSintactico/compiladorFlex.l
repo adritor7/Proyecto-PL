@@ -74,6 +74,7 @@ ignora " "|\t|\n
 {digitos}+"."{digitos}* {yylval.real=atof(yytext);return NUMERO;}
 {digitos}+  {yylval.real=atof(yytext);return NUMERO;}
 {letras}({letras}|{digitos})* {return IDENTIFICADOR;}
-. 							  {return ERROR;}
+[a-zA-Z0-9] {return CARACTER;}
+. 		    {return ERROR;}
 %%
 
