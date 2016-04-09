@@ -3,9 +3,9 @@
 #include <stdlib.h>
 #include <math.h>
 #include <string.h>
-#include “sang-astHeader.h”
+#include "sang-astHeader.h"
 
-extern yylex(void);
+extern int yylex(void);
 extern char *yytext;
 extern int linea;
 extern FILE *yyin;
@@ -20,6 +20,7 @@ void yyerror(char* s);
 	struct ast *a;
 }
 
+%start inicio
 
 %token ABREPARENTESIS 257
 %token CIERRAPARENTESIS 258
@@ -76,6 +77,9 @@ void yyerror(char* s);
 %token NOT 318
 %token CADENA 319
 
+%left MODULO MODULO_PUNTO
+%left SUMA SUMA_PUNTO RESTA RESTA_PUNTO
+%left DIVISION DIVISION_PUNTO MULTIPLICACION MULTIPLICACION_PUNTO
 
 %type <real> NUMERO RHSreal 
 %type <a> asignacion LHSreal LHSvector
@@ -83,6 +87,14 @@ void yyerror(char* s);
 
 
 %%
+
+inicio: COMIENZAFUNCION NULO INICIO ABREPARENTESIS TIPOVECTOR IDENTIFICADOR CIERRAPARENTESIS ABRELLAVES comando CIERRALLAVES ;
+
+comando: comando
+        | declaracion
+        | asignacion
+        ; //TODO
+
 
 LHSletra: TIPOLETRA IDENTIFICADOR ;
 LHSreal: TIPOREAL IDENTIFICADOR;
@@ -93,17 +105,23 @@ RHSvector: RESERVAESPACIOVECTOR NUMERO tipo ;
 
 tipo: TIPOLETRA
 	|TIPOREAL
-	|TIPOVECTOR
 	;
 
-asignacion: LHSreal ASIGNACION RHSreal {$$ = newast(‘=’&’R’ , $1,$3); }
-	| LHSvector ASIGNACION RHSvector
+asignacion: LHSreal ASIGNACION RHSreal PUNTOYCOMA {$$ = newast(‘=’&’R’ , $1,$3); }
+	| LHSvector ASIGNACION RHSvector PUNTOYCOMA {$$ = newast(‘=’&’V’ , $1,$3); }
 	;
 
 declaracion: LHSletra PUNTOYCOMA
 	| LHSreal PUNTOYCOMA
 	| LHSvector PUNTOYCOMA
 	;
+
+Calcular: NUMERO {$$=$1;}
+    |Calcular SUMA Calcular {$$=$1+$3;}
+    |Calcular RESTA Calcular {$$=$1-$3;}
+    |Calcular MULTIPLICACION Calcular {$$=$1*$3;}
+    |Calcular DIVISION Calcular {$$=$1/$3;}
+    ;
 
 %%
 
