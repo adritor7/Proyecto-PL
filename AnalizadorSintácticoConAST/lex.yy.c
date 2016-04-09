@@ -387,11 +387,11 @@ struct yy_trans_info
 	};
 static yyconst flex_int16_t yy_accept[164] =
     {   0,
-        0,    0,    0,    0,    0,    0,   68,   65,   61,   61,
-       48,   54,   60,   36,   65,    5,    6,   34,   32,    1,
-       33,   65,   35,   63,    4,    3,   43,    2,   42,   64,
+        0,    0,    0,    0,    0,    0,   68,   66,   61,   61,
+       48,   54,   60,   36,   66,    5,    6,   34,   32,    1,
+       33,   66,   35,   63,    4,    3,   43,    2,   42,   64,
        64,   64,   64,    7,    8,   64,   64,   64,   64,   64,
-       64,   64,   64,   64,   64,    9,   65,   10,   53,   53,
+       64,   64,   64,   64,   64,    9,   66,   10,   53,   53,
        56,   67,   55,   61,   47,   60,   60,   49,   41,   39,
        37,   38,   40,   51,   62,   63,   45,   46,   44,   64,
        64,   64,   64,   64,   64,   64,   64,   64,   64,   64,
@@ -1188,16 +1188,16 @@ YY_RULE_SETUP
 case 65:
 YY_RULE_SETUP
 #line 82 "lang.l"
-{return ERROR;}
+{return CARACTER;}
 	YY_BREAK
 case 66:
 YY_RULE_SETUP
 #line 83 "lang.l"
-{printf("error  %s",yytext);}
+{return ERROR;}
 	YY_BREAK
 case 67:
 YY_RULE_SETUP
-#line 84 "lang.l"
+#line 85 "lang.l"
 ECHO;
 	YY_BREAK
 #line 1204 "lex.yy.c"
@@ -2211,7 +2211,7 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 84 "lang.l"
+#line 85 "lang.l"
 
 
 int main(int argc,char *argv[])

@@ -79,8 +79,9 @@ ignora " "|\t|\n
 {digitos}+"."{digitos}* {return NUMERO;}
 {digitos}+  {return NUMERO;}
 {letras}({letras}|{digitos})* {return IDENTIFICADOR;}
+[a-zA-Z0-9]     {return CARACTER;}
 . 							  {return ERROR;}
-. 							  {printf("error  %s",yytext);}
+
 %%
 int main(int argc,char *argv[])
 {

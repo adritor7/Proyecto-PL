@@ -81,6 +81,7 @@ void yyerror(char* s);
 %left SUMA SUMA_PUNTO RESTA RESTA_PUNTO
 %left DIVISION DIVISION_PUNTO MULTIPLICACION MULTIPLICACION_PUNTO
 
+%type <numero> espacio
 %type <real> NUMERO RHSreal 
 %type <a> asignacion LHSreal LHSvector
 
@@ -90,21 +91,34 @@ void yyerror(char* s);
 
 inicio: COMIENZAFUNCION NULO INICIO ABREPARENTESIS TIPOVECTOR IDENTIFICADOR CIERRAPARENTESIS ABRELLAVES comando CIERRALLAVES ;
 
-comando: comando
-        | declaracion
-        | asignacion
-        ; //TODO
+comando:
+        | declaracion comando
+        | asignacion comando
+        | Calcular comando
+        | llamadaFuncion comando
+        ; //añadir más
 
+llamadaFuncion: IDENTIFICADOR ABREPARENTESIS parametros CIERRAPARENTESIS PUNTOYCOMA ;
+
+parametros:
+        |parametro
+        |parametro COMA parametros
+        ;
+
+parametro:tipo IDENTIFICADOR;
 
 LHSletra: TIPOLETRA IDENTIFICADOR ;
 LHSreal: TIPOREAL IDENTIFICADOR;
 LHSvector: TIPOVECTOR IDENTIFICADOR;
 
 RHSreal: NUMERO  { $$ = (double) $1};
-RHSvector: RESERVAESPACIOVECTOR NUMERO tipo ;
+RHSvector: RESERVAESPACIOVECTOR espacio tipo ;
+
+espacio: NUMERO { $$ = (int) $1};
 
 tipo: TIPOLETRA
 	|TIPOREAL
+    |TIPOVECTOR
 	;
 
 asignacion: LHSreal ASIGNACION RHSreal PUNTOYCOMA {$$ = newast(‘=’&’R’ , $1,$3); }
@@ -116,7 +130,7 @@ declaracion: LHSletra PUNTOYCOMA
 	| LHSvector PUNTOYCOMA
 	;
 
-Calcular: NUMERO {$$=$1;}
+Calcular: NUMERO
     |Calcular SUMA Calcular {$$=$1+$3;}
     |Calcular RESTA Calcular {$$=$1-$3;}
     |Calcular MULTIPLICACION Calcular {$$=$1*$3;}
