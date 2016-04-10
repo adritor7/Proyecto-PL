@@ -1,0 +1,29 @@
+funcion  : COMIENZAFUNCION tipo
+tipo  : NULO name
+	   | TIPOLETRA name
+	   | TIPOVECTOR name
+	   | TIPOREAL name
+	   
+name  : IDENTIFICADOR ABREPARENTESIS variablesFunciones 
+variablesFunciones: introducirVariables			   
+introducirVariables:  DeclaracionVariables variablesFunciones
+					 |SentenciasInterior
+SentenciasInterior : CIERRAPARENTESIS ABRECORCHETES Sentencias FinalFuncion
+FinalFuncion : DEVUELVE IDENTIFICADOR PUNTOYCOMA fin 
+			  | DEVUELVE PUNTOYCOMA fin
+			  
+fin  : CIERRACORCHETES funcion
+	  | CIERRACORCHETES
+;
+
+DeclaracionVariables: TIPOREAL c
+					| TIPOVECTOR c
+					| TIPOLETRA c
+					c  : IDENTIFICADOR COMA
+;
+
+SentenciaEscribir: ESCRIBIR ABREPARENTESIS oracion CIERRAPARENTESIS PUNTOYCOMA
+oracion: | CADENA
+
+/ Flex 
+({letras}|{digitos}|[" "])* {return CADENA;}

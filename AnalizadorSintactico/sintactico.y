@@ -7,11 +7,12 @@
   extern int linea;
   extern FILE *yyin;
   void yyerror(char *s);
+  int yydebug=1;
+
 %}
 %union{
   float  real;
   char * texto;
-  char caracter;
 }
 %start input
 %token ABREPARENTESIS 
@@ -20,9 +21,9 @@
 %token CIERRACORCHETES 
 %token ABRELLAVES 
 %token CIERRALLAVES 
-%token <texto> TIPOREAL 
+%token TIPOREAL 
 %token TIPOVECTOR 
-%token <texto> TIPOLETRA 
+%token TIPOLETRA 
 %token RESERVAESPACIOVECTOR 
 %token SI 
 %token SOLOSI 
@@ -42,8 +43,8 @@
 %token SALIDA 
 %token COMA 
 %token INICIO 
-%token <real> NUMERO 
-%token <texto> IDENTIFICADOR 
+%token REAL 
+%token IDENTIFICADOR 
 %token LEER 
 %token ESCRIBIR 
 %token ASIGNACION 
@@ -68,33 +69,42 @@
 %token OR  
 %token NOT 
 %token CADENA 
-%token <texto> CARACTER
+%token CARACTER
+%token ENTERO
+%token INSTRING
+%token COMILLASDOBLE
 
 %left MODULO MODULO_PUNTO
 %left SUMA SUMA_PUNTO RESTA RESTA_PUNTO
 %left DIVISION DIVISION_PUNTO MULTIPLICACION MULTIPLICACION_PUNTO
 
-%type <real> Calcular
-%type <real> Exp_l
-%type <real> Imprimir
-%type <real> ExpresionNumerica
-%type <texto> ExpresionLetra
 %%
 
-input: /* cadena vacia */
-	   | input linea
-	  ;
-
-linea: TIPOREAL IDENTIFICADOR '='  ExpresionNumerica PUNTOYCOMA
-	  |TIPOREAL IDENTIFICADOR '=' PUNTOYCOMA
-	  |TIPOLETRA IDENTIFICADOR '=' PUNTOYCOMA
-	  |TIPOLETRA IDENTIFICADOR '=' ExpresionLetra PUNTOYCOMA
-	  ;
-	  
-ExpresionNumerica: NUMERO {$$=$1;}
-ExpresionLetra: CARACTER {$$=$1;}
-
-
+input : /**/
+		| input Declaracion
+;
+Declaracion  :  DeclarionVariableNumerica
+			  | DeclarionVariableLetra
+			  | DeclaracionVariableVector
+			  
+;
+DeclarionVariableNumerica : TIPOREAL IDENTIFICADOR g
+g  : ASIGNACION REAL PUNTOYCOMA 
+   | ASIGNACION ENTERO PUNTOYCOMA
+   | PUNTOYCOMA
+;
+DeclarionVariableLetra : TIPOLETRA IDENTIFICADOR q
+q  : ASIGNACION CARACTER PUNTOYCOMA 
+   | PUNTOYCOMA 
+;
+DeclaracionVariableVector: TIPOVECTOR IDENTIFICADOR ASIGNACION m
+m : RESERVAESPACIOVECTOR ENTERO mt
+   |ABRECORCHETES number CIERRACORCHETES PUNTOYCOMA
+mt : TIPOLETRA PUNTOYCOMA
+	 |TIPOREAL PUNTOYCOMA
+number: ENTERO 
+		| number COMA number 
+;
 %%
 void yyerror(char *s){
   printf("Error sintactico %s",s);

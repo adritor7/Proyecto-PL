@@ -8,6 +8,7 @@
 digitos [0-9]
 letras [a-zA-Z]
 ignora " "|\t|\n
+introducirEnCadena " " | "." |\t
 %%
 ","         {return COMA;}
 "="         {return ASIGNACION;}
@@ -59,6 +60,7 @@ ignora " "|\t|\n
 "!"         {return NOT;}
 "&&"        {return AND;}
 "||"    	{return OR;}
+"\""        {return COMILLASDOBLE;}
 
 <INITIAL>"/*"   {BEGIN(INCOMMENT);}
 <INCOMMENT>"*/" {BEGIN(INITIAL);}
@@ -68,13 +70,11 @@ ignora " "|\t|\n
 <INSTRING>\"    {BEGIN(INITIAL);}
 <INSTRING>.    {;}
 
-
 "#"({letras}|{digitos}|[" "|\t|])*[\n]? {;}
 {ignora}+   {;}
-{digitos}+"."{digitos}* {yylval.real=atof(yytext);return NUMERO;}
-{digitos}+  {yylval.real=atof(yytext);return NUMERO;}
+({letras}){1} {return CARACTER;}
+{digitos}+  {yylval.real=atof(yytext);return ENTERO;}
+{digitos}+"."{digitos}* {yylval.real=atof(yytext);return REAL;}
 {letras}({letras}|{digitos})* {return IDENTIFICADOR;}
-[a-zA-Z0-9] {return CARACTER;}
-. 		    {return ERROR;}
-%%
+. 		  			 		  {return ERROR;}
 
