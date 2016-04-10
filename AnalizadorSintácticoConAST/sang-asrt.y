@@ -2,8 +2,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
-#include <string.h>
-#include "sang-astHeader.h"
+#include <string>
+#include <vector>
+#include "ASTNodes.hpp"
 
 extern int yylex(void);
 extern char *yytext;
@@ -17,7 +18,14 @@ void yyerror(char* s);
 	double real;
 	int numero;
 	char* texto;
-	struct ast *a;
+    class Value_node<int>* nodoEntero;
+    class Value_node<double>* nodoReal;
+    class Value_node<std::string>* nodoCadena;
+    class Value_node<std::vector<double>>* nodoVectorReales;
+    class Variable_node<Value_node<double>>* variableReal;
+    class Variable_node<Value_node<std::string>>* variableCadena;
+    class Variable_node<Value_node<char>>* variableLetra;
+    class Variable_node<Value_node<std::vector<double>>>* variableVectorReal;
 }
 
 %start inicio
@@ -92,13 +100,15 @@ void yyerror(char* s);
 inicio: COMIENZAFUNCION NULO INICIO ABREPARENTESIS TIPOVECTOR IDENTIFICADOR CIERRAPARENTESIS ABRELLAVES comando CIERRALLAVES ;
 
 comando:
-        | declaracion comando
-        | asignacion comando
-        | Calcular comando
-        | llamadaFuncion comando
+        | declaracion PUNTOYCOMA comando
+        | asignacion PUNTOYCOMA comando
+        | Calcular PUNTOYCOMA comando
+        | llamadaFuncion PUNTOYCOMA comando
+        | devuelve PUNTOYCOMA comando
+        | nombreVariable PUNTOYCOMA
         ; //añadir más
 
-llamadaFuncion: IDENTIFICADOR ABREPARENTESIS parametros CIERRAPARENTESIS PUNTOYCOMA ;
+llamadaFuncion: IDENTIFICADOR ABREPARENTESIS parametros CIERRAPARENTESIS ;
 
 parametros:
         |parametro
@@ -108,7 +118,7 @@ parametros:
 parametro:tipo IDENTIFICADOR;
 
 LHSletra: TIPOLETRA IDENTIFICADOR ;
-LHSreal: TIPOREAL IDENTIFICADOR;
+LHSreal: TIPOREAL IDENTIFICADOR;:
 LHSvector: TIPOVECTOR IDENTIFICADOR;
 
 RHSreal: NUMERO  { $$ = (double) $1};
@@ -121,13 +131,13 @@ tipo: TIPOLETRA
     |TIPOVECTOR
 	;
 
-asignacion: LHSreal ASIGNACION RHSreal PUNTOYCOMA {$$ = newast(‘=’&’R’ , $1,$3); }
-	| LHSvector ASIGNACION RHSvector PUNTOYCOMA {$$ = newast(‘=’&’V’ , $1,$3); }
+asignacion: LHSreal ASIGNACION RHSreal  {$$ = newast(‘=’&’R’ , $1,$3); } //TODO modificar con la nueva estructura .cpp
+	| LHSvector ASIGNACION RHSvector  {$$ = newast(‘=’&’V’ , $1,$3); }
 	;
 
-declaracion: LHSletra PUNTOYCOMA
-	| LHSreal PUNTOYCOMA
-	| LHSvector PUNTOYCOMA
+declaracion: LHSletra
+	| LHSreal
+	| LHSvector
 	;
 
 Calcular: NUMERO
@@ -136,6 +146,28 @@ Calcular: NUMERO
     |Calcular MULTIPLICACION Calcular {$$=$1*$3;}
     |Calcular DIVISION Calcular {$$=$1/$3;}
     ;
+
+declaracionFuncion: COMIENZAFUNCION tipo IDENTIFICADOR ABREPARENTESIS parametros CIERRAPARENTESIS ABRELLAVES comando CIERRALLAVES;
+
+devuelve: DEVUELVE comando;
+
+nombreVariable: IDENTIFICADOR;
+
+OperacionesVectores: vector
+    |OperacionesVectores SUMA_PUNTO OperacionesVectores
+    |OperacionesVectores RESTA_PUNTO OperacionesVectores
+    |OperacionesVectores MODULO_PUNTO OperacionesVectores
+    |OperacionesVectores MULTIPLICACION_PUNTO OperacionesVectores
+    |OperacionesVectores DIVISION_PUNTO OperacionesVectores
+    ;
+
+vector: ABRECORCHETES elementosVector CIERRACORCHETES
+    | nombreVariable
+    ;
+
+elementosVector: NUMERO COMA elementosVector  // aquí añadir código entre tokens para crear el vector?
+        | NUMERO
+        ;
 
 %%
 
