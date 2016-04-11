@@ -6,6 +6,8 @@
 #include <vector>
 #include "ASTNodes.hpp"
 
+Main_node* root;
+
 extern int yylex(void);
 extern char *yytext;
 extern int linea;
@@ -30,60 +32,61 @@ void yyerror(char* s);
 
 %start inicio
 
-%token ABREPARENTESIS 257
-%token CIERRAPARENTESIS 258
-%token ABRECORCHETES 259
-%token CIERRACORCHETES 260
-%token ABRELLAVES 261
-%token CIERRALLAVES 262
-%token TIPOREAL 263
-%token TIPOVECTOR 264
-%token TIPOLETRA 265
-%token RESERVAESPACIOVECTOR 266
-%token SI 267
-%token SOLOSI 268
-%token SINO 269
-%token DEPENDE 270
-%token CASO 271
-%token FIN 272
-%token PORDEFECTO 273
-%token PUNTOYCOMA 274
-%token DOSPUNTOS 275
-%token MIENTRAS 276
-%token PARA 278
-%token FINAL 279
-%token COMIENZAFUNCION 280
-%token NULO   281
-%token DEVUELVE 282
-%token SALIDA 283
-%token COMA 284
-%token INICIO 285
-%token NUMERO 286
-%token IDENTIFICADOR 287
-%token LEER 288
-%token ESCRIBIR 289
-%token ASIGNACION 290
-%token ERROR 291
-%token SUMA 300
-%token RESTA 301
-%token MULTIPLICACION 302
-%token DIVISION 303
-%token MODULO 304
-%token SUMA_PUNTO 305
-%token RESTA_PUNTO 306
-%token MULTIPLICACION_PUNTO 307
-%token DIVISION_PUNTO 308
-%token MODULO_PUNTO 309
-%token MAYOR_QUE 310
-%token MAYOR_O_IGUAL_QUE 311
-%token MENOR_QUE 312
-%token MENOR_O_IGUAL_QUE 313
-%token IGUAL_QUE 314
-%token DISTINTO_QUE 315
-%token AND 316
-%token OR  317
-%token NOT 318
-%token CADENA 319
+%token ABREPARENTESIS 
+%token CIERRAPARENTESIS 
+%token ABRECORCHETES
+%token CIERRACORCHETES 
+%token ABRELLAVES 
+%token CIERRALLAVES 
+%token TIPOREAL 
+%token TIPOVECTOR 
+%token TIPOLETRA 
+%token RESERVAESPACIOVECTOR 
+%token SI 
+%token SOLOSI 
+%token SINO 
+%token DEPENDE 
+%token CASO 
+%token FIN 
+%token PORDEFECTO 
+%token PUNTOYCOMA 
+%token DOSPUNTOS 
+%token MIENTRAS 
+%token PARA 
+%token FINAL 
+%token COMIENZAFUNCION 
+%token NULO   
+%token DEVUELVE 
+%token SALIDA 
+%token COMA 
+%token INICIO 
+%token NUMERO 
+%token IDENTIFICADOR 
+%token LEER 
+%token ESCRIBIR 
+%token ASIGNACION 
+%token ERROR 
+%token SUMA 
+%token RESTA 
+%token MULTIPLICACION 
+%token DIVISION 
+%token MODULO 
+%token SUMA_PUNTO 
+%token RESTA_PUNTO 
+%token MULTIPLICACION_PUNTO 
+%token DIVISION_PUNTO 
+%token MODULO_PUNTO 
+%token MAYOR_QUE 
+%token MAYOR_O_IGUAL_QUE 
+%token MENOR_QUE 
+%token MENOR_O_IGUAL_QUE 
+%token IGUAL_QUE 
+%token DISTINTO_QUE 
+%token AND 
+%token OR  
+%token NOT 
+%token CADENA 
+%token ESPACIO
 
 %left MODULO MODULO_PUNTO
 %left SUMA SUMA_PUNTO RESTA RESTA_PUNTO
@@ -93,46 +96,43 @@ void yyerror(char* s);
 %type <real> NUMERO RHSreal 
 %type <a> asignacion LHSreal LHSvector
 
-
+//TODO añadir todos los tipos de nodos: IDENTIFICADOR -> string parametros -> std::vector<Node*>; La familia LHS es del tipo variable Node.
 
 %%
 
-inicio: COMIENZAFUNCION NULO INICIO ABREPARENTESIS TIPOVECTOR IDENTIFICADOR CIERRAPARENTESIS ABRELLAVES comando CIERRALLAVES ;
+inicio: COMIENZAFUNCION NULO INICIO ABREPARENTESIS TIPOVECTOR IDENTIFICADOR CIERRAPARENTESIS ABRELLAVES { $$ = new Main_node(); root = $$} comando CIERRALLAVES ;
 
 comando:
-        | declaracion PUNTOYCOMA comando
-        | asignacion PUNTOYCOMA comando
-        | Calcular PUNTOYCOMA comando
-        | llamadaFuncion PUNTOYCOMA comando
-        | devuelve PUNTOYCOMA comando
-        | nombreVariable PUNTOYCOMA
+        | declaracion {root->nuevoHijo($1);} PUNTOYCOMA comando 
+        | asignacion {root->nuevoHijo($1);} PUNTOYCOMA comando
+        | Calcular {root->nuevoHijo($1);} PUNTOYCOMA comando
+        | llamadaFuncion {root->nuevoHijo($1);} PUNTOYCOMA comando
+        | devuelve {root->nuevoHijo($1);} PUNTOYCOMA comando
+        | nombreVariable {root->nuevoHijo($1);} PUNTOYCOMA //para el return?
         ; //añadir más
 
-llamadaFuncion: IDENTIFICADOR ABREPARENTESIS parametros CIERRAPARENTESIS ;
+llamadaFuncion: IDENTIFICADOR ABREPARENTESIS {$$ = new FunctionCall_node($1);} parametros {$$->setParams($3);} CIERRAPARENTESIS ;
 
 parametros:
-        |parametro
-        |parametro COMA parametros
+        |parametro {$$ = new std::vector<Node*>(); $$->push_back($1);}
+        |parametro {$$ = new std::vector<Node*>(); $$->push_back($1);} COMA parametros {$$.insert( $$.end(), $3->begin(), $3->end() );}
         ;
 
-parametro:tipo IDENTIFICADOR;
+parametro:TIPOLETRA IDENTIFICADOR {$$ = new Variable_node<char>($2)};
+	| TIPOREAL IDENTIFICADOR {$$ = new Variable_node<double>($2)};
+	| TIPOVECTOR IDENTIFICADOR {$$ = new Variable_node<void*>($2)};
 
-LHSletra: TIPOLETRA IDENTIFICADOR ;
-LHSreal: TIPOREAL IDENTIFICADOR;:
-LHSvector: TIPOVECTOR IDENTIFICADOR;
+LHSletra: TIPOLETRA IDENTIFICADOR {$$ = new Variable_node<char>($2)};
+LHSreal: TIPOREAL IDENTIFICADOR {$$ = new Variable_node<double>($2)};
+LHSvector: TIPOVECTOR IDENTIFICADOR {$$ = new Variable_node<void*>($2)};
 
-RHSreal: NUMERO  { $$ = (double) $1};
-RHSvector: RESERVAESPACIOVECTOR espacio tipo ;
+RHSreal: NUMERO {$$ = new Value_node<double>($1);}; //TODO modificar el tipo de datos de RHSreal
+RHSvector: RESERVAESPACIOVECTOR ESPACIO TIPOLETRA {$$ = new Value_node(malloc($2*sizeof(char)))};
+		| RESERVAESPACIOVECTOR ESPACIO TIPOREAL {$$ = new Value_node(malloc($2*sizeof(double)))};
 
-espacio: NUMERO { $$ = (int) $1};
 
-tipo: TIPOLETRA
-	|TIPOREAL
-    |TIPOVECTOR
-	;
-
-asignacion: LHSreal ASIGNACION RHSreal  {$$ = newast(‘=’&’R’ , $1,$3); } //TODO modificar con la nueva estructura .cpp
-	| LHSvector ASIGNACION RHSvector  {$$ = newast(‘=’&’V’ , $1,$3); }
+asignacion: LHSreal ASIGNACION RHSreal  {$$ = $1->setValue($3); } 
+	| LHSvector ASIGNACION RHSvector  {$$ = $->setValue($3); }
 	;
 
 declaracion: LHSletra

@@ -41,6 +41,9 @@ public:
     };
     
     bool isDeclaration(){return this->declaration;};
+	void setValue(Value_node<Data_node>* v){
+		this->value = *v;
+	}
 };
 
 class Main_node{
@@ -72,6 +75,8 @@ public:
     void addParam(Node* param){
         this->params.push_back(param);
     }
+	
+	void setParams(std::vector<Node*> p){ this->params = p;} ;
     
 };
 
